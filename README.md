@@ -44,6 +44,8 @@ pnpm build
 node aqua/dist/aqua/src/cli/index.js serve
 ```
 
+![dashboard](picture/dashboard.png)
+
 浏览器访问 `http://localhost:3000`，在可视化界面中管理 Agent、Skill、LLM 配置等。
 
 ### 使用 CLI 创建项目
