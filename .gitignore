@@ -1,0 +1,85 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+out/
+*.tgz
+
+# Next.js
+.next/
+
+# Testing
+coverage/
+
+# Turbo
+.turbo/
+.turbo.cache/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+*.tsbuildinfo.*
+
+# Compiled JS in source (accidental in-source builds)
+aqua/packages/shared/src/**/*.js
+aqua/packages/shared/src/**/*.js.map
+aqua/packages/shared/src/**/*.d.ts
+aqua/packages/shared/src/**/*.d.ts.map
+
+# Misc
+*.local
+.cache/
+*.pid
+*.seed
+*.pid.lock
+
+# Debug
+.node_repl_history
+
+# Compiled files
+*.min.js
+*.min.css
+
+# Storybook
+storybook-static/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+_tmp_*
+
+# Trae
+.trae/
+
+# User Projects (will be created automatically)
+project/

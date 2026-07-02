@@ -1,0 +1,4 @@
+packages:
+  - 'aqua/**'
+  - 'workbench/**'
+  - 'packages/**'
