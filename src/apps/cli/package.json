@@ -1,10 +1,10 @@
 {
-  "name": "aqua",
+  "name": "ts-agent-kit-cli",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "bin": {
-    "aqua": "./dist/index.js"
+    "ts-agent-kit": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

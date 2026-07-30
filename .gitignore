@@ -53,12 +53,6 @@ Thumbs.db
 *.tsbuildinfo
 *.tsbuildinfo.*
 
-# Compiled JS in source (accidental in-source builds)
-aqua/packages/shared/src/**/*.js
-aqua/packages/shared/src/**/*.js.map
-aqua/packages/shared/src/**/*.d.ts
-aqua/packages/shared/src/**/*.d.ts.map
-
 # Misc
 *.local
 .cache/
@@ -90,3 +84,4 @@ _tmp_*
 
 # User Projects (will be created automatically)
 project/
+test_project/

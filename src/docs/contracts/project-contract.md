@@ -1,6 +1,6 @@
-# AQUA Project Contract
+# ts-agent-kit Project Contract
 
-Every generated project contains `.aqua/project.json`. This file is the shared interface between the CLI, the AQUA Skill, and future adapters.
+Every generated project contains `.ts-agent-kit/project.json`. This file is the shared interface between the CLI, the Skill, and future adapters.
 
 ## Required fields
 
@@ -19,7 +19,7 @@ Generated projects must not contain a placeholder agent that pretends to complet
 
 ## Capability rule
 
-AQUA must not fake runtime capabilities. Parallel agent execution is either `unsupported` for standalone projects or `adapter-required` for harness targets that may provide real dispatch.
+ts-agent-kit must not fake runtime capabilities. Parallel agent execution is either `unsupported` for standalone projects or `adapter-required` for harness targets that may provide real dispatch.
 
 ## Public seams
 

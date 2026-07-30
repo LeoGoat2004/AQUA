@@ -1,0 +1,39 @@
+{
+  "name": "ts-agent-kit",
+  "version": "0.1.0",
+  "private": false,
+  "description": "CLI and installable Skill for generating modular TypeScript agent application bases.",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@9.0.0",
+  "bin": {
+    "ts-agent-kit": "./src/apps/cli/dist/index.js"
+  },
+  "files": [
+    "README.md",
+    "LICENSE",
+    "skills/ts-agent-kit/SKILL.md",
+    "skills/ts-agent-kit/agents/openai.yaml",
+    "src/apps/cli/dist/**/*.js",
+    "src/apps/cli/dist/**/*.d.ts",
+    "src/apps/cli/dist/**/*.js.map",
+    "src/apps/cli/dist/**/*.d.ts.map",
+    "src/packages/core/dist/**/*.js",
+    "src/packages/core/dist/**/*.d.ts",
+    "src/packages/core/dist/**/*.js.map",
+    "src/packages/core/dist/**/*.d.ts.map",
+    "src/packages/core/package.json"
+  ],
+  "scripts": {
+    "build": "pnpm --dir src run build",
+    "typecheck": "pnpm --dir src run typecheck",
+    "test": "pnpm --dir src test",
+    "smoke": "pnpm --dir src run smoke",
+    "clean": "pnpm --dir src run clean",
+    "prepack": "pnpm --dir src run build"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}

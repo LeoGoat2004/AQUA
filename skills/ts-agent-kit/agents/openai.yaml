@@ -1,0 +1,7 @@
+interface:
+  display_name: "ts-agent-kit"
+  short_description: "Generate and verify TypeScript agent app bases."
+  default_prompt: "Use $ts-agent-kit to create a TypeScript agent application base in my target directory."
+
+policy:
+  allow_implicit_invocation: true

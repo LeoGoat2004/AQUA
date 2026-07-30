@@ -6,7 +6,7 @@ import path from 'node:path';
 import { createProjectPlan, normalizeCreateOptions, validateProject, writeProject } from '../packages/core/dist/index.js';
 
 test('core creates a valid minimal project plan and writes contract files', async () => {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'aqua-core-'));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'ts-agent-kit-core-'));
   const target = path.join(root, 'demo');
   try {
     const options = normalizeCreateOptions({
@@ -19,7 +19,7 @@ test('core creates a valid minimal project plan and writes contract files', asyn
     });
     const plan = createProjectPlan(options);
     await writeProject(plan, options);
-    const manifest = JSON.parse(await readFile(path.join(target, '.aqua/project.json'), 'utf8'));
+    const manifest = JSON.parse(await readFile(path.join(target, '.ts-agent-kit/project.json'), 'utf8'));
     assert.equal(manifest.projectName, 'demo');
     assert.deepEqual(manifest.modules.agents, ['assistant']);
     assert.deepEqual(manifest.modules.tools, []);

@@ -11,6 +11,8 @@ import {
 } from '../../../packages/core/dist/index.js';
 import type { HarnessTarget, PackageManager } from '../../../packages/core/dist/index.js';
 
+const VERSION = '0.1.0';
+
 interface ParsedArgs {
   readonly command: string | undefined;
   readonly values: readonly string[];
@@ -19,6 +21,15 @@ interface ParsedArgs {
 
 async function main(argv: readonly string[]): Promise<number> {
   const parsed = parseArgs(argv);
+  if (parsed.command === '--help' || parsed.command === '-h') {
+    printHelp();
+    return 0;
+  }
+  if (parsed.command === '--version' || parsed.command === '-v') {
+    console.log(VERSION);
+    return 0;
+  }
+
   switch (parsed.command) {
     case 'create':
       return createCommand(parsed);
@@ -58,7 +69,7 @@ async function createCommand(args: ParsedArgs): Promise<number> {
   });
   const plan = createProjectPlan(options);
   await writeProject(plan, options);
-  console.log(`Created AQUA project at ${plan.rootDir}`);
+  console.log(`Created TypeScript agent app at ${plan.rootDir}`);
   console.log(`Preset: ${plan.manifest.preset}`);
   console.log(`Next: cd ${target} && ${plan.manifest.commands.install} && ${plan.manifest.commands.smoke}`);
   return 0;
@@ -68,7 +79,7 @@ async function validateCommand(args: ParsedArgs): Promise<number> {
   const rootDir = path.resolve(process.cwd(), args.values[0] ?? '.');
   const result = await validateProject(rootDir);
   printDiagnostics(result.diagnostics);
-  console.log(result.valid ? 'AQUA project contract is valid.' : 'AQUA project contract is invalid.');
+  console.log(result.valid ? 'ts-agent-kit project contract is valid.' : 'ts-agent-kit project contract is invalid.');
   return result.valid ? 0 : 1;
 }
 
@@ -134,13 +145,14 @@ function printDiagnostics(diagnostics: readonly { level: string; code: string; m
 }
 
 function printHelp(): void {
-  console.log(`AQUA - TypeScript agent harness project generator
+  console.log(`ts-agent-kit - TypeScript agent application base generator
 
 Usage:
-  aqua create <dir> [--name <name>] [--preset minimal|research-assistant|coding-agent] [--harness standalone|codex|opencode|claude-code] [--package-manager pnpm|npm|yarn] [--force]
-  aqua validate [dir]
-  aqua doctor [dir]
-  aqua list presets
+  ts-agent-kit create <dir> [--name <name>] [--preset minimal|research-assistant|coding-agent] [--harness standalone|codex|opencode|claude-code] [--package-manager pnpm|npm|yarn] [--force]
+  ts-agent-kit validate [dir]
+  ts-agent-kit doctor [dir]
+  ts-agent-kit list presets
+  ts-agent-kit --version
 `);
 }
 

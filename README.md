@@ -1,97 +1,105 @@
-# AQUA
+# ts-agent-kit
 
-AQUA is a CLI plus companion Skill for generating clean, modular TypeScript agent harness project bases in a user-selected directory.
+`ts-agent-kit` is a CLI plus installable Agent Skill for generating production-oriented TypeScript agent application bases.
 
-This repository is under active hardening. The current generator is no longer allowed to fake agent success: generated applications fail with `MODEL_PROVIDER_NOT_CONFIGURED` until the developer injects a real `ModelProvider`.
+It is for users who want to start a real TypeScript agent app quickly, not for users who want to clone this repository and run internal development commands.
 
-The repository root is this directory. The implementation lives under `src/`.
+## User install
 
-## Current status
-
-Implemented:
-
-- Clean TypeScript workspace under `src/`.
-- `@aqua/core` as the single project planning, writing, and validation module.
-- `aqua` CLI commands:
-  - `create`
-  - `validate`
-  - `doctor`
-  - `list presets`
-- Installable companion Skill at `skill/SKILL.md`.
-- Presets:
-  - `minimal`
-  - `research-assistant`
-  - `coding-agent`
-- Generated TypeScript agent harness seams:
-  - `ModelProvider`
-  - `Agent`
-  - `Tool`
-  - `Workflow`
-  - `TraceSink`
-  - `ArtifactStore`
-  - `PermissionPolicy`
-  - `Verifier`
-- Generated project contract at `.aqua/project.json`.
-- Generated project TypeScript config and smoke test.
-- Honest default runtime behavior: `start` fails until a real model provider is configured.
-
-Not implemented yet:
-
-- dashboard;
-- MCP / A2A runtime adapters;
-- parallel agent dispatch;
-- embedded LLM client or credential storage.
-
-Those capabilities are intentionally not faked. They should be added only after a real adapter or runtime implementation is available and verified.
-
-## Quick start
+Create a project directly with pnpm:
 
 ```bash
-cd src
-pnpm install
-node apps/cli/dist/index.js create ../my-agent-app --preset minimal --package-manager pnpm
-node apps/cli/dist/index.js validate ../my-agent-app
-node apps/cli/dist/index.js doctor ../my-agent-app
+pnpm dlx ts-agent-kit create ./my-agent-app --preset coding-agent --package-manager pnpm
+```
+
+Or with npm:
+
+```bash
+npx ts-agent-kit create ./my-agent-app --preset coding-agent --package-manager npm
 ```
 
 Then verify the generated project:
 
 ```bash
-cd ../my-agent-app
+cd ./my-agent-app
 pnpm install
 pnpm run typecheck
 pnpm test
 pnpm run smoke
+pnpm run start -- "hello"
 ```
 
-Run the generated application:
+The final command should fail with `MODEL_PROVIDER_NOT_CONFIGURED` until you add a real model provider. That is intentional; the generated app must not fake agent success.
+
+## Install the Skill
+
+Install the companion Skill with the standard skills CLI, not with a custom installer:
 
 ```bash
-pnpm run start -- "your input"
+npx skills add https://github.com/LeoGoat2004/ts-agent-kit --skill ts-agent-kit -g -a codex -y
 ```
 
-Expected first-run behavior is failure with `MODEL_PROVIDER_NOT_CONFIGURED`. That is intentional. The generated project is a real harness base, not a fake agent app. Implement or inject a real `ModelProvider` before treating the generated project as an application.
-
-## Development verification
-
-From `src/`:
+For OpenCode:
 
 ```bash
-node_modules/.bin/tsc -b packages/core apps/cli --force --pretty false
-node --test tests/*.test.mjs
+npx skills add https://github.com/LeoGoat2004/ts-agent-kit --skill ts-agent-kit -g -a opencode -y
 ```
 
-Note: in the current Codex runtime, the pnpm wrapper may fail before running package scripts if registry supply-chain metadata cannot be fetched. In that environment, direct `tsc` plus `node --test` is the reliable source-code verification path.
+After the Skill is installed, restart or refresh the agent client if needed, then ask:
 
-## Documentation
+```text
+Use $ts-agent-kit to create a TypeScript coding agent app in ./my-agent-app.
+```
 
-- Product vision: `src/docs/product/vision.md`
-- Project contract: `src/docs/contracts/project-contract.md`
-- Skill: `skill/SKILL.md`
+## What the generated app contains
 
-## Engineering bar
+- strict TypeScript project
+- `.ts-agent-kit/project.json` manifest contract
+- runtime config loader
+- model provider seam
+- agents
+- deterministic tool interface
+- workflow orchestration
+- trace sink
+- artifact store
+- permission policy
+- verifier
+- smoke tests
 
-AQUA must not pass tests by pretending that a placeholder agent solved a task. Smoke tests may use an explicit test model provider to verify harness wiring; production runtime must fail loudly when no real provider is configured.
+## CLI commands
+
+```bash
+ts-agent-kit create <dir> [--preset minimal|research-assistant|coding-agent] [--harness standalone|codex|opencode|claude-code] [--package-manager pnpm|npm|yarn] [--force]
+ts-agent-kit validate [dir]
+ts-agent-kit doctor [dir]
+ts-agent-kit list presets
+ts-agent-kit --version
+```
+
+## What is intentionally not faked
+
+- MCP / A2A adapters
+- parallel agent dispatch
+- embedded LLM client
+- credential storage
+- dashboard UI
+
+These features should be added only when backed by real runtime adapters and tests.
+
+## Development
+
+Repository development still uses the local checkout:
+
+```bash
+cd <repo>
+pnpm --dir src install
+pnpm run build
+pnpm test
+pnpm run smoke
+pnpm pack
+```
+
+`test_project/` is reserved for local generated-project testing and is ignored by Git.
 
 ## License
 

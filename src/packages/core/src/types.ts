@@ -2,7 +2,7 @@ export type PackageManager = 'pnpm' | 'npm' | 'yarn';
 
 export type HarnessTarget = 'standalone' | 'codex' | 'opencode' | 'claude-code';
 
-export interface AquaPreset {
+export interface TsAgentKitPreset {
   readonly id: string;
   readonly name: string;
   readonly description: string;
@@ -11,7 +11,7 @@ export interface AquaPreset {
   readonly workflows: readonly string[];
 }
 
-export interface AquaCreateOptions {
+export interface TsAgentKitCreateOptions {
   readonly name: string;
   readonly directory: string;
   readonly preset: string;
@@ -20,7 +20,7 @@ export interface AquaCreateOptions {
   readonly force: boolean;
 }
 
-export interface AquaProjectManifest {
+export interface TsAgentKitProjectManifest {
   readonly schemaVersion: 1;
   readonly projectName: string;
   readonly preset: string;
@@ -46,25 +46,25 @@ export interface AquaProjectManifest {
   };
 }
 
-export interface AquaFilePlan {
+export interface TsAgentKitFilePlan {
   readonly relativePath: string;
   readonly content: string;
 }
 
-export interface AquaProjectPlan {
+export interface TsAgentKitProjectPlan {
   readonly rootDir: string;
-  readonly manifest: AquaProjectManifest;
-  readonly files: readonly AquaFilePlan[];
+  readonly manifest: TsAgentKitProjectManifest;
+  readonly files: readonly TsAgentKitFilePlan[];
 }
 
-export interface AquaDiagnostic {
+export interface TsAgentKitDiagnostic {
   readonly level: 'error' | 'warning' | 'info';
   readonly code: string;
   readonly message: string;
   readonly file?: string;
 }
 
-export interface AquaValidationResult {
+export interface TsAgentKitValidationResult {
   readonly valid: boolean;
-  readonly diagnostics: readonly AquaDiagnostic[];
+  readonly diagnostics: readonly TsAgentKitDiagnostic[];
 }

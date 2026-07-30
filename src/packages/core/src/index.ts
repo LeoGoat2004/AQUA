@@ -8,13 +8,13 @@ export {
 } from './project.js';
 
 export type {
-  AquaCreateOptions,
-  AquaDiagnostic,
-  AquaFilePlan,
-  AquaPreset,
-  AquaProjectManifest,
-  AquaProjectPlan,
-  AquaValidationResult,
   HarnessTarget,
   PackageManager,
+  TsAgentKitCreateOptions,
+  TsAgentKitDiagnostic,
+  TsAgentKitFilePlan,
+  TsAgentKitPreset,
+  TsAgentKitProjectManifest,
+  TsAgentKitProjectPlan,
+  TsAgentKitValidationResult,
 } from './types.js';

@@ -1,6 +1,6 @@
-import type { AquaPreset } from './types.js';
+import type { TsAgentKitPreset } from './types.js';
 
-export const PRESETS: readonly AquaPreset[] = [
+export const PRESETS: readonly TsAgentKitPreset[] = [
   {
     id: 'minimal',
     name: 'Minimal TypeScript Agent Harness',
@@ -27,10 +27,10 @@ export const PRESETS: readonly AquaPreset[] = [
   },
 ] as const;
 
-export function getPreset(id: string): AquaPreset | undefined {
+export function getPreset(id: string): TsAgentKitPreset | undefined {
   return PRESETS.find((preset) => preset.id === id);
 }
 
-export function listPresets(): readonly AquaPreset[] {
+export function listPresets(): readonly TsAgentKitPreset[] {
   return PRESETS;
 }

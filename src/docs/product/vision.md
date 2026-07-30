@@ -1,16 +1,16 @@
-# AQUA Product Vision
+# ts-agent-kit Product Vision
 
-AQUA is a CLI plus companion Skill for creating modular TypeScript agent harness project bases.
+ts-agent-kit is a CLI plus companion Skill for creating modular TypeScript agent application bases with built-in harness seams.
 
-The product is not a general hosted agent platform. It generates practical source code that users can immediately own, inspect, typecheck, test, and extend for a chosen application scenario.
+The product is not a hosted agent platform. It generates practical source code that users can immediately own, inspect, typecheck, test, and extend for a chosen application scenario.
 
 ## First release scope
 
-- `aqua create` creates a complete TypeScript project base.
-- `aqua validate` checks the project contract and expected files.
-- `aqua doctor` explains verification commands and adapter caveats.
-- `aqua list presets` lists supported project presets.
-- `aqua-project` Skill lets coding agents create and evolve projects using the same contract.
+- `ts-agent-kit create` creates a complete TypeScript agent app base.
+- `ts-agent-kit validate` checks the project contract and expected files.
+- `ts-agent-kit doctor` explains verification commands and adapter caveats.
+- `ts-agent-kit list presets` lists supported project presets.
+- `$ts-agent-kit` Skill lets coding agents create and evolve projects using the same contract.
 - Generated applications fail with `MODEL_PROVIDER_NOT_CONFIGURED` until a real provider is injected.
 
 ## Non-goals for the first release

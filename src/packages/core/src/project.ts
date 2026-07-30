@@ -3,13 +3,13 @@ import path from 'node:path';
 import { getPreset, listPresets } from './presets.js';
 import { renderProjectFiles } from './templates.js';
 import type {
-  AquaCreateOptions,
-  AquaDiagnostic,
-  AquaProjectManifest,
-  AquaProjectPlan,
-  AquaValidationResult,
   HarnessTarget,
   PackageManager,
+  TsAgentKitCreateOptions,
+  TsAgentKitDiagnostic,
+  TsAgentKitProjectManifest,
+  TsAgentKitProjectPlan,
+  TsAgentKitValidationResult,
 } from './types.js';
 
 export { listPresets };
@@ -17,7 +17,7 @@ export { listPresets };
 const PACKAGE_MANAGERS = new Set<PackageManager>(['pnpm', 'npm', 'yarn']);
 const HARNESSES = new Set<HarnessTarget>(['standalone', 'codex', 'opencode', 'claude-code']);
 
-export function normalizeCreateOptions(input: Partial<AquaCreateOptions> & Pick<AquaCreateOptions, 'name' | 'directory'>): AquaCreateOptions {
+export function normalizeCreateOptions(input: Partial<TsAgentKitCreateOptions> & Pick<TsAgentKitCreateOptions, 'name' | 'directory'>): TsAgentKitCreateOptions {
   const preset = input.preset ?? 'minimal';
   const harness = input.harness ?? 'standalone';
   const packageManager = input.packageManager ?? 'pnpm';
@@ -45,13 +45,13 @@ export function normalizeCreateOptions(input: Partial<AquaCreateOptions> & Pick<
   };
 }
 
-export function createProjectPlan(options: AquaCreateOptions): AquaProjectPlan {
+export function createProjectPlan(options: TsAgentKitCreateOptions): TsAgentKitProjectPlan {
   const preset = getPreset(options.preset);
   if (!preset) {
     throw new Error(`Unknown preset "${options.preset}".`);
   }
 
-  const manifest: AquaProjectManifest = {
+  const manifest: TsAgentKitProjectManifest = {
     schemaVersion: 1,
     projectName: options.name,
     preset: preset.id,
@@ -84,7 +84,7 @@ export function createProjectPlan(options: AquaCreateOptions): AquaProjectPlan {
   };
 }
 
-export async function writeProject(plan: AquaProjectPlan, options: Pick<AquaCreateOptions, 'force'>): Promise<void> {
+export async function writeProject(plan: TsAgentKitProjectPlan, options: Pick<TsAgentKitCreateOptions, 'force'>): Promise<void> {
   await ensureWritableTarget(plan.rootDir, options.force);
 
   if (options.force) {
@@ -98,10 +98,10 @@ export async function writeProject(plan: AquaProjectPlan, options: Pick<AquaCrea
   }
 }
 
-export async function validateProject(rootDir: string): Promise<AquaValidationResult> {
-  const diagnostics: AquaDiagnostic[] = [];
+export async function validateProject(rootDir: string): Promise<TsAgentKitValidationResult> {
+  const diagnostics: TsAgentKitDiagnostic[] = [];
   const absoluteRoot = path.resolve(rootDir);
-  const manifestPath = path.join(absoluteRoot, '.aqua', 'project.json');
+  const manifestPath = path.join(absoluteRoot, '.ts-agent-kit', 'project.json');
   const manifest = await readManifest(manifestPath, diagnostics);
 
   if (!manifest) {
@@ -113,12 +113,14 @@ export async function validateProject(rootDir: string): Promise<AquaValidationRe
 
   await expectFile(absoluteRoot, 'package.json', diagnostics);
   await expectFile(absoluteRoot, 'tsconfig.json', diagnostics);
+  await expectFile(absoluteRoot, '.env.example', diagnostics);
   await expectFile(absoluteRoot, 'README.md', diagnostics);
   await expectFile(absoluteRoot, 'src/index.ts', diagnostics);
+  await expectFile(absoluteRoot, 'src/config/runtime-config.ts', diagnostics);
   await expectFile(absoluteRoot, 'src/harness/runner.ts', diagnostics);
   await expectFile(absoluteRoot, 'src/harness/types.ts', diagnostics);
   await expectFile(absoluteRoot, 'src/harness/guardrails.ts', diagnostics);
-  await expectFile(absoluteRoot, 'src/harness/model-provider.ts', diagnostics);
+  await expectFile(absoluteRoot, 'src/providers/model-provider.ts', diagnostics);
   await expectFile(absoluteRoot, 'src/harness/permissions.ts', diagnostics);
   await expectFile(absoluteRoot, 'src/harness/verification.ts', diagnostics);
   await expectFile(absoluteRoot, 'src/workflows/plan-execute-verify.ts', diagnostics);
@@ -137,23 +139,23 @@ export async function validateProject(rootDir: string): Promise<AquaValidationRe
   };
 }
 
-export async function doctorProject(rootDir: string): Promise<AquaValidationResult> {
+export async function doctorProject(rootDir: string): Promise<TsAgentKitValidationResult> {
   const validation = await validateProject(rootDir);
-  const diagnostics: AquaDiagnostic[] = [...validation.diagnostics];
-  const manifestPath = path.join(path.resolve(rootDir), '.aqua', 'project.json');
+  const diagnostics: TsAgentKitDiagnostic[] = [...validation.diagnostics];
+  const manifestPath = path.join(path.resolve(rootDir), '.ts-agent-kit', 'project.json');
 
   try {
-    const manifest = JSON.parse(await readFile(manifestPath, 'utf8')) as AquaProjectManifest;
+    const manifest = JSON.parse(await readFile(manifestPath, 'utf8')) as TsAgentKitProjectManifest;
     diagnostics.push({
       level: 'info',
-      code: 'AQUA_VERIFY_COMMANDS',
+      code: 'TS_AGENT_KIT_VERIFY_COMMANDS',
       message: `Run: ${manifest.commands.install}; ${manifest.commands.typecheck}; ${manifest.commands.test}; ${manifest.commands.smoke}`,
     });
     if (manifest.capabilities.parallelAgents === 'adapter-required') {
       diagnostics.push({
         level: 'warning',
-        code: 'AQUA_ADAPTER_REQUIRED',
-        message: 'Parallel agent execution requires a verified target-harness adapter. AQUA does not fake concurrency.',
+        code: 'TS_AGENT_KIT_ADAPTER_REQUIRED',
+        message: 'Parallel agent execution requires a verified target-harness adapter. ts-agent-kit does not fake concurrency.',
       });
     }
   } catch {
@@ -183,14 +185,14 @@ async function ensureWritableTarget(rootDir: string, force: boolean): Promise<vo
   }
 }
 
-async function readManifest(manifestPath: string, diagnostics: AquaDiagnostic[]): Promise<AquaProjectManifest | undefined> {
+async function readManifest(manifestPath: string, diagnostics: TsAgentKitDiagnostic[]): Promise<TsAgentKitProjectManifest | undefined> {
   try {
-    const manifest = JSON.parse(await readFile(manifestPath, 'utf8')) as AquaProjectManifest;
+    const manifest = JSON.parse(await readFile(manifestPath, 'utf8')) as TsAgentKitProjectManifest;
     if (manifest.schemaVersion !== 1) {
       diagnostics.push({
         level: 'error',
-        code: 'AQUA_SCHEMA_VERSION',
-        message: 'Unsupported AQUA schema version.',
+        code: 'TS_AGENT_KIT_SCHEMA_VERSION',
+        message: 'Unsupported ts-agent-kit schema version.',
         file: manifestPath,
       });
       return undefined;
@@ -199,19 +201,19 @@ async function readManifest(manifestPath: string, diagnostics: AquaDiagnostic[])
   } catch (error) {
     diagnostics.push({
       level: 'error',
-      code: 'AQUA_MANIFEST',
-      message: `Cannot read .aqua/project.json: ${error instanceof Error ? error.message : String(error)}`,
+      code: 'TS_AGENT_KIT_MANIFEST',
+      message: `Cannot read .ts-agent-kit/project.json: ${error instanceof Error ? error.message : String(error)}`,
       file: manifestPath,
     });
     return undefined;
   }
 }
 
-function validateManifestShape(manifest: AquaProjectManifest, manifestPath: string, diagnostics: AquaDiagnostic[]): void {
+function validateManifestShape(manifest: TsAgentKitProjectManifest, manifestPath: string, diagnostics: TsAgentKitDiagnostic[]): void {
   if (!manifest.projectName || typeof manifest.projectName !== 'string') {
     diagnostics.push({
       level: 'error',
-      code: 'AQUA_PROJECT_NAME',
+      code: 'TS_AGENT_KIT_PROJECT_NAME',
       message: 'Manifest projectName must be a non-empty string.',
       file: manifestPath,
     });
@@ -220,7 +222,7 @@ function validateManifestShape(manifest: AquaProjectManifest, manifestPath: stri
   if (!Array.isArray(manifest.modules?.agents) || manifest.modules.agents.length === 0) {
     diagnostics.push({
       level: 'error',
-      code: 'AQUA_AGENTS',
+      code: 'TS_AGENT_KIT_AGENTS',
       message: 'Manifest must declare at least one agent.',
       file: manifestPath,
     });
@@ -229,7 +231,7 @@ function validateManifestShape(manifest: AquaProjectManifest, manifestPath: stri
   if (!Array.isArray(manifest.modules?.tools)) {
     diagnostics.push({
       level: 'error',
-      code: 'AQUA_TOOLS',
+      code: 'TS_AGENT_KIT_TOOLS',
       message: 'Manifest modules.tools must be an array.',
       file: manifestPath,
     });
@@ -238,18 +240,18 @@ function validateManifestShape(manifest: AquaProjectManifest, manifestPath: stri
   if (!Array.isArray(manifest.modules?.workflows) || !manifest.modules.workflows.includes('plan-execute-verify')) {
     diagnostics.push({
       level: 'error',
-      code: 'AQUA_WORKFLOWS',
+      code: 'TS_AGENT_KIT_WORKFLOWS',
       message: 'Manifest must declare the plan-execute-verify workflow.',
       file: manifestPath,
     });
   }
 }
 
-function validateManifestSemantics(manifest: AquaProjectManifest, manifestPath: string, diagnostics: AquaDiagnostic[]): void {
+function validateManifestSemantics(manifest: TsAgentKitProjectManifest, manifestPath: string, diagnostics: TsAgentKitDiagnostic[]): void {
   if (manifest.modules.tools.includes('echo')) {
     diagnostics.push({
       level: 'error',
-      code: 'AQUA_FAKE_TOOL',
+      code: 'TS_AGENT_KIT_FAKE_TOOL',
       message: 'The obsolete echo tool is not allowed. Generated projects must not fake agent success.',
       file: manifestPath,
     });
@@ -258,27 +260,27 @@ function validateManifestSemantics(manifest: AquaProjectManifest, manifestPath: 
   if (manifest.capabilities.parallelAgents === 'adapter-required' && manifest.harness === 'standalone') {
     diagnostics.push({
       level: 'error',
-      code: 'AQUA_PARALLEL_CAPABILITY',
+      code: 'TS_AGENT_KIT_PARALLEL_CAPABILITY',
       message: 'Standalone harness cannot require a parallel-agent adapter.',
       file: manifestPath,
     });
   }
 }
 
-async function expectFile(rootDir: string, relativePath: string, diagnostics: AquaDiagnostic[]): Promise<void> {
+async function expectFile(rootDir: string, relativePath: string, diagnostics: TsAgentKitDiagnostic[]): Promise<void> {
   const absolutePath = path.join(rootDir, relativePath);
   try {
     await access(absolutePath);
     diagnostics.push({
       level: 'info',
-      code: 'AQUA_FILE_PRESENT',
+      code: 'TS_AGENT_KIT_FILE_PRESENT',
       message: `Found ${relativePath}`,
       file: absolutePath,
     });
   } catch {
     diagnostics.push({
       level: 'error',
-      code: 'AQUA_FILE_MISSING',
+      code: 'TS_AGENT_KIT_FILE_MISSING',
       message: `Missing ${relativePath}`,
       file: absolutePath,
     });
