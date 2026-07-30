@@ -22,6 +22,7 @@ test('core creates a valid minimal project plan and writes contract files', asyn
     const manifest = JSON.parse(await readFile(path.join(target, '.aqua/project.json'), 'utf8'));
     assert.equal(manifest.projectName, 'demo');
     assert.deepEqual(manifest.modules.agents, ['assistant']);
+    assert.deepEqual(manifest.modules.tools, []);
     const validation = await validateProject(target);
     assert.equal(validation.valid, true);
   } finally {

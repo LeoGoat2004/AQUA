@@ -5,6 +5,7 @@ AQUA is a CLI plus companion Skill for generating clean, modular TypeScript agen
 It is intentionally practical:
 
 - no fake protocol support;
+- no fake agent success path;
 - no hidden LLM client or credentials;
 - no dashboard in the first release;
 - generated projects include strict TypeScript, a manifest contract, harness seams, and smoke tests.
@@ -16,8 +17,9 @@ Implemented:
 - `@aqua/core` as the single deep module for project planning, writing, and validation.
 - `aqua` CLI commands: `create`, `validate`, `doctor`, and `list presets`.
 - Presets: `minimal`, `research-assistant`, and `coding-agent`.
-- Companion Skill at `packages/skill-pack/aqua-project/SKILL.md`.
+- Installable companion Skill at `../skill/SKILL.md`.
 - Generated TypeScript harness seams:
+  - `ModelProvider`
   - `Agent`
   - `Tool`
   - `Workflow`
@@ -27,6 +29,7 @@ Implemented:
   - `Verifier`
 - Generated project contract at `.aqua/project.json`.
 - Generated project smoke test and strict TypeScript config.
+- Honest default runtime behavior: generated apps fail with `MODEL_PROVIDER_NOT_CONFIGURED` until a real provider is injected.
 
 Not implemented yet:
 
@@ -41,7 +44,7 @@ Those capabilities are intentionally not faked.
 
 ```bash
 pnpm install
-node_modules/.bin/tsc -b packages/core apps/cli --pretty false
+node_modules/.bin/tsc -b packages/core apps/cli --force --pretty false
 node --test tests/*.test.mjs
 ```
 
@@ -68,11 +71,21 @@ pnpm test
 pnpm run smoke
 ```
 
+Generated projects should fail honestly until configured:
+
+```bash
+pnpm run start -- "your input"
+```
+
+The expected first-run error is `MODEL_PROVIDER_NOT_CONFIGURED`. Do not replace this with a placeholder success response.
+
 ## Skill
 
-The companion Skill is at `packages/skill-pack/aqua-project/SKILL.md`.
+The companion Skill is at `../skill/SKILL.md`.
 
 Install or copy that skill into a coding-agent environment, then ask it to create or evolve AQUA projects using the CLI and `.aqua/project.json` contract.
+
+The Skill is user-facing and intentionally stored at repository root, not in the TypeScript workspace.
 
 ## Notes
 

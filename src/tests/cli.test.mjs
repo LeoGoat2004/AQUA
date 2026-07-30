@@ -22,6 +22,7 @@ test('cli creates and validates a research assistant project', async () => {
     });
     assert.equal(validate.status, 0, validate.stderr);
     assert.match(validate.stdout, /valid/);
+    assert.doesNotMatch(validate.stdout, /echo/i);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

@@ -19,8 +19,6 @@ importers:
 
   packages/core: {}
 
-  packages/skill-pack: {}
-
 packages:
 
   '@types/node@20.19.43':

@@ -2,6 +2,8 @@
 
 AQUA is a CLI plus companion Skill for generating clean, modular TypeScript agent harness project bases in a user-selected directory.
 
+This repository is under active hardening. The current generator is no longer allowed to fake agent success: generated applications fail with `MODEL_PROVIDER_NOT_CONFIGURED` until the developer injects a real `ModelProvider`.
+
 The repository root is this directory. The implementation lives under `src/`.
 
 ## Current status
@@ -15,12 +17,13 @@ Implemented:
   - `validate`
   - `doctor`
   - `list presets`
-- Companion Skill at `src/packages/skill-pack/aqua-project/SKILL.md`.
+- Installable companion Skill at `skill/SKILL.md`.
 - Presets:
   - `minimal`
   - `research-assistant`
   - `coding-agent`
 - Generated TypeScript agent harness seams:
+  - `ModelProvider`
   - `Agent`
   - `Tool`
   - `Workflow`
@@ -30,6 +33,7 @@ Implemented:
   - `Verifier`
 - Generated project contract at `.aqua/project.json`.
 - Generated project TypeScript config and smoke test.
+- Honest default runtime behavior: `start` fails until a real model provider is configured.
 
 Not implemented yet:
 
@@ -60,12 +64,20 @@ pnpm test
 pnpm run smoke
 ```
 
+Run the generated application:
+
+```bash
+pnpm run start -- "your input"
+```
+
+Expected first-run behavior is failure with `MODEL_PROVIDER_NOT_CONFIGURED`. That is intentional. The generated project is a real harness base, not a fake agent app. Implement or inject a real `ModelProvider` before treating the generated project as an application.
+
 ## Development verification
 
 From `src/`:
 
 ```bash
-node_modules/.bin/tsc -b packages/core apps/cli --pretty false
+node_modules/.bin/tsc -b packages/core apps/cli --force --pretty false
 node --test tests/*.test.mjs
 ```
 
@@ -75,7 +87,11 @@ Note: in the current Codex runtime, the pnpm wrapper may fail before running pac
 
 - Product vision: `src/docs/product/vision.md`
 - Project contract: `src/docs/contracts/project-contract.md`
-- Skill: `src/packages/skill-pack/aqua-project/SKILL.md`
+- Skill: `skill/SKILL.md`
+
+## Engineering bar
+
+AQUA must not pass tests by pretending that a placeholder agent solved a task. Smoke tests may use an explicit test model provider to verify harness wiring; production runtime must fail loudly when no real provider is configured.
 
 ## License
 

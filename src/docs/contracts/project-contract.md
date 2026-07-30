@@ -13,6 +13,10 @@ Every generated project contains `.aqua/project.json`. This file is the shared i
 - `commands`: install, typecheck, test, and smoke commands.
 - `capabilities`: explicit supported and adapter-required behavior.
 
+## Provider rule
+
+Generated projects must not contain a placeholder agent that pretends to complete user work. Runtime execution must fail with `MODEL_PROVIDER_NOT_CONFIGURED` until a real `ModelProvider` is injected or implemented.
+
 ## Capability rule
 
 AQUA must not fake runtime capabilities. Parallel agent execution is either `unsupported` for standalone projects or `adapter-required` for harness targets that may provide real dispatch.
@@ -22,6 +26,7 @@ AQUA must not fake runtime capabilities. Parallel agent execution is either `uns
 Generated projects expose these seams for extension and tests:
 
 - `createRunner`
+- `ModelProvider`
 - `Workflow`
 - `Agent`
 - `Tool`

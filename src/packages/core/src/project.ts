@@ -108,6 +108,9 @@ export async function validateProject(rootDir: string): Promise<AquaValidationRe
     return { valid: false, diagnostics };
   }
 
+  validateManifestShape(manifest, manifestPath, diagnostics);
+  validateManifestSemantics(manifest, manifestPath, diagnostics);
+
   await expectFile(absoluteRoot, 'package.json', diagnostics);
   await expectFile(absoluteRoot, 'tsconfig.json', diagnostics);
   await expectFile(absoluteRoot, 'README.md', diagnostics);
@@ -115,6 +118,7 @@ export async function validateProject(rootDir: string): Promise<AquaValidationRe
   await expectFile(absoluteRoot, 'src/harness/runner.ts', diagnostics);
   await expectFile(absoluteRoot, 'src/harness/types.ts', diagnostics);
   await expectFile(absoluteRoot, 'src/harness/guardrails.ts', diagnostics);
+  await expectFile(absoluteRoot, 'src/harness/model-provider.ts', diagnostics);
   await expectFile(absoluteRoot, 'src/harness/permissions.ts', diagnostics);
   await expectFile(absoluteRoot, 'src/harness/verification.ts', diagnostics);
   await expectFile(absoluteRoot, 'src/workflows/plan-execute-verify.ts', diagnostics);
@@ -191,7 +195,7 @@ async function readManifest(manifestPath: string, diagnostics: AquaDiagnostic[])
       });
       return undefined;
     }
-    return manifest;
+  return manifest;
   } catch (error) {
     diagnostics.push({
       level: 'error',
@@ -200,6 +204,64 @@ async function readManifest(manifestPath: string, diagnostics: AquaDiagnostic[])
       file: manifestPath,
     });
     return undefined;
+  }
+}
+
+function validateManifestShape(manifest: AquaProjectManifest, manifestPath: string, diagnostics: AquaDiagnostic[]): void {
+  if (!manifest.projectName || typeof manifest.projectName !== 'string') {
+    diagnostics.push({
+      level: 'error',
+      code: 'AQUA_PROJECT_NAME',
+      message: 'Manifest projectName must be a non-empty string.',
+      file: manifestPath,
+    });
+  }
+
+  if (!Array.isArray(manifest.modules?.agents) || manifest.modules.agents.length === 0) {
+    diagnostics.push({
+      level: 'error',
+      code: 'AQUA_AGENTS',
+      message: 'Manifest must declare at least one agent.',
+      file: manifestPath,
+    });
+  }
+
+  if (!Array.isArray(manifest.modules?.tools)) {
+    diagnostics.push({
+      level: 'error',
+      code: 'AQUA_TOOLS',
+      message: 'Manifest modules.tools must be an array.',
+      file: manifestPath,
+    });
+  }
+
+  if (!Array.isArray(manifest.modules?.workflows) || !manifest.modules.workflows.includes('plan-execute-verify')) {
+    diagnostics.push({
+      level: 'error',
+      code: 'AQUA_WORKFLOWS',
+      message: 'Manifest must declare the plan-execute-verify workflow.',
+      file: manifestPath,
+    });
+  }
+}
+
+function validateManifestSemantics(manifest: AquaProjectManifest, manifestPath: string, diagnostics: AquaDiagnostic[]): void {
+  if (manifest.modules.tools.includes('echo')) {
+    diagnostics.push({
+      level: 'error',
+      code: 'AQUA_FAKE_TOOL',
+      message: 'The obsolete echo tool is not allowed. Generated projects must not fake agent success.',
+      file: manifestPath,
+    });
+  }
+
+  if (manifest.capabilities.parallelAgents === 'adapter-required' && manifest.harness === 'standalone') {
+    diagnostics.push({
+      level: 'error',
+      code: 'AQUA_PARALLEL_CAPABILITY',
+      message: 'Standalone harness cannot require a parallel-agent adapter.',
+      file: manifestPath,
+    });
   }
 }
 
