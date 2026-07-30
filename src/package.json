@@ -1,0 +1,23 @@
+{
+  "name": "aqua-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AQUA CLI and Skill for generating modular TypeScript agent harness project bases.",
+  "packageManager": "pnpm@9.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b packages/core apps/cli",
+    "typecheck": "tsc -b packages/core apps/cli --pretty false",
+    "test": "node --test tests/*.test.mjs",
+    "smoke": "node apps/cli/dist/index.js create .tmp/smoke-minimal --preset minimal --force --package-manager pnpm && node apps/cli/dist/index.js validate .tmp/smoke-minimal",
+    "clean": "node scripts/clean.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}

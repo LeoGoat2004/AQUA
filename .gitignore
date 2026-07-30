@@ -1,9 +1,12 @@
 # Dependencies
 node_modules/
+src/node_modules/
 .pnpm-store/
 
 # Build outputs
 dist/
+src/dist/
+src/**/dist/
 build/
 out/
 *.tgz
@@ -13,6 +16,7 @@ out/
 
 # Testing
 coverage/
+src/coverage/
 
 # Turbo
 .turbo/
@@ -75,6 +79,9 @@ storybook-static/
 # Temporary files
 tmp/
 temp/
+src/.tmp/
+src/tmp/
+src/temp/
 *.tmp
 _tmp_*
 
