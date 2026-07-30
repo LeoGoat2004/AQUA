@@ -4,7 +4,18 @@
 
 It is for users who want to start a real TypeScript agent app quickly, not for users who want to clone this repository and run internal development commands.
 
-## User install
+## Current release status
+
+The repository and package layout are ready for a user-facing release, but the package must be published to npm before `pnpm dlx ts-agent-kit` or `npx ts-agent-kit` works for ordinary users from the public registry.
+
+Until npm publication, the Skill can be installed from GitHub and the CLI can be verified from the local packed tarball by maintainers.
+
+## User flow after npm publication
+
+Users have two independent entry points:
+
+1. Use the CLI directly.
+2. Install the Skill into their agent client, then ask the agent to create the project.
 
 Create a project directly with pnpm:
 
@@ -33,16 +44,16 @@ The final command should fail with `MODEL_PROVIDER_NOT_CONFIGURED` until you add
 
 ## Install the Skill
 
-Install the companion Skill with the standard skills CLI, not with a custom installer:
+Install the companion Skill with the standard skills CLI, not with a custom installer. Do not hard-code a target agent in the command; the installer can prompt the user for scope and agent selection:
 
 ```bash
-npx skills add https://github.com/LeoGoat2004/ts-agent-kit --skill ts-agent-kit -g -a codex -y
+npx skills add https://github.com/LeoGoat2004/ts-agent-kit --skill ts-agent-kit
 ```
 
-For OpenCode:
+For non-interactive install across supported agents, users may choose their own flags, for example:
 
 ```bash
-npx skills add https://github.com/LeoGoat2004/ts-agent-kit --skill ts-agent-kit -g -a opencode -y
+npx skills add https://github.com/LeoGoat2004/ts-agent-kit --skill ts-agent-kit --all
 ```
 
 After the Skill is installed, restart or refresh the agent client if needed, then ask:
@@ -50,6 +61,21 @@ After the Skill is installed, restart or refresh the agent client if needed, the
 ```text
 Use $ts-agent-kit to create a TypeScript coding agent app in ./my-agent-app.
 ```
+
+The Skill still needs a runnable CLI. It resolves the CLI in this order:
+
+1. existing `ts-agent-kit` command
+2. `pnpm dlx ts-agent-kit`
+3. `npx ts-agent-kit`
+
+After npm publication, this means users do not need to clone the repository. The Skill can call the package through `pnpm dlx` or `npx`.
+
+## What gets installed when
+
+- `npx skills add ... --skill ts-agent-kit` installs only the agent Skill into the user's selected agent environment. It does not install generated project dependencies.
+- `pnpm dlx ts-agent-kit create ...` downloads and runs the CLI package transiently.
+- The generated project is a normal TypeScript project. It still needs its own package install, such as `pnpm install`, before `typecheck`, `test`, `smoke`, or runtime execution.
+- The first runtime execution should fail with `MODEL_PROVIDER_NOT_CONFIGURED` until the user implements or injects a real `ModelProvider`.
 
 ## What the generated app contains
 
@@ -69,7 +95,7 @@ Use $ts-agent-kit to create a TypeScript coding agent app in ./my-agent-app.
 ## CLI commands
 
 ```bash
-ts-agent-kit create <dir> [--preset minimal|research-assistant|coding-agent] [--harness standalone|codex|opencode|claude-code] [--package-manager pnpm|npm|yarn] [--force]
+ts-agent-kit create <dir> [--preset minimal|research-assistant|coding-agent] [--harness standalone|agent-client] [--package-manager pnpm|npm|yarn] [--force]
 ts-agent-kit validate [dir]
 ts-agent-kit doctor [dir]
 ts-agent-kit list presets

@@ -1,6 +1,6 @@
 export type PackageManager = 'pnpm' | 'npm' | 'yarn';
 
-export type HarnessTarget = 'standalone' | 'codex' | 'opencode' | 'claude-code';
+export type HarnessTarget = 'standalone' | 'agent-client';
 
 export interface TsAgentKitPreset {
   readonly id: string;

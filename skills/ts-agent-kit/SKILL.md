@@ -1,6 +1,6 @@
 ---
 name: ts-agent-kit
-description: Create, validate, and evolve modular TypeScript agent application bases with the ts-agent-kit CLI. Use when a user asks to generate a TypeScript agent app, scaffold an agent harness-backed application, create a Codex/OpenCode/Claude Code-ready TS agent project, validate a ts-agent-kit project contract, or adapt a generated project for a concrete application scenario.
+description: Create, validate, and evolve modular TypeScript agent application bases with the ts-agent-kit CLI. Use when a user asks to generate a TypeScript agent app, scaffold an agent harness-backed application, create an agent-client-ready TS project, validate a ts-agent-kit project contract, or adapt a generated project for a concrete application scenario.
 ---
 
 # ts-agent-kit Skill
@@ -21,12 +21,14 @@ Do not present a generated project as a finished intelligent application. A new 
    - `research-assistant`: evidence, literature, document, or web-analysis workflows.
    - `coding-agent`: code generation, patching, verification, or review workflows.
 3. Infer `harness` only when explicitly requested. Use `standalone` by default.
-4. Require an installed or directly runnable `ts-agent-kit` command. Do not ask the user to clone the repository as the normal path.
+4. Require an installed or directly runnable `ts-agent-kit` command. Do not ask the user to clone the repository as the normal path. Prefer `pnpm dlx ts-agent-kit` or `npx ts-agent-kit` when no global command exists.
 5. Create new projects with:
 
    ```bash
-   ts-agent-kit create <target-dir> --preset <minimal|research-assistant|coding-agent> --harness <standalone|codex|opencode|claude-code> --package-manager <pnpm|npm|yarn>
+   ts-agent-kit create <target-dir> --preset <minimal|research-assistant|coding-agent> --harness <standalone|agent-client> --package-manager <pnpm|npm|yarn>
    ```
+
+   If `ts-agent-kit` is not installed globally, use the same arguments through `pnpm dlx ts-agent-kit` or `npx ts-agent-kit`.
 
 6. After creation or modification, run:
 
@@ -56,6 +58,8 @@ Use this order:
 3. `npx ts-agent-kit --help`
 
 If none work, stop and report `TS_AGENT_KIT_CLI_UNAVAILABLE` with the attempted commands.
+
+Installing this Skill does not install generated-project dependencies. A newly created project is a normal TypeScript project and must run its own package-manager install before verification.
 
 ## Modification rules
 

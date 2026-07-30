@@ -148,7 +148,7 @@ function printHelp(): void {
   console.log(`ts-agent-kit - TypeScript agent application base generator
 
 Usage:
-  ts-agent-kit create <dir> [--name <name>] [--preset minimal|research-assistant|coding-agent] [--harness standalone|codex|opencode|claude-code] [--package-manager pnpm|npm|yarn] [--force]
+  ts-agent-kit create <dir> [--name <name>] [--preset minimal|research-assistant|coding-agent] [--harness standalone|agent-client] [--package-manager pnpm|npm|yarn] [--force]
   ts-agent-kit validate [dir]
   ts-agent-kit doctor [dir]
   ts-agent-kit list presets

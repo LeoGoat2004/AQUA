@@ -7,7 +7,7 @@ Every generated project contains `.ts-agent-kit/project.json`. This file is the 
 - `schemaVersion`: currently `1`.
 - `projectName`: safe package/project identifier.
 - `preset`: source preset used to create the base.
-- `harness`: `standalone`, `codex`, `opencode`, or `claude-code`.
+- `harness`: `standalone` or `agent-client`.
 - `packageManager`: `pnpm`, `npm`, or `yarn`.
 - `modules`: declared agents, tools, and workflows.
 - `commands`: install, typecheck, test, and smoke commands.

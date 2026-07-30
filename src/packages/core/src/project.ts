@@ -15,7 +15,7 @@ import type {
 export { listPresets };
 
 const PACKAGE_MANAGERS = new Set<PackageManager>(['pnpm', 'npm', 'yarn']);
-const HARNESSES = new Set<HarnessTarget>(['standalone', 'codex', 'opencode', 'claude-code']);
+const HARNESSES = new Set<HarnessTarget>(['standalone', 'agent-client']);
 
 export function normalizeCreateOptions(input: Partial<TsAgentKitCreateOptions> & Pick<TsAgentKitCreateOptions, 'name' | 'directory'>): TsAgentKitCreateOptions {
   const preset = input.preset ?? 'minimal';
